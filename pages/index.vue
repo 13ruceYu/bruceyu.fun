@@ -1,3 +1,3 @@
 <template>
-  <h1>index.vue</h1>
+  <div class="flex items-center justify-center h-full">hello world</div>
 </template>
