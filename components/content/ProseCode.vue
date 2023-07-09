@@ -37,8 +37,4 @@ pre code .line {
   display: block;
   min-height: 1rem;
 }
-
-pre code {
-  background-color: pink !important;
-}
 </style>

@@ -1,3 +1,7 @@
+<script lang="ts" setup>
+useHead({ title: 'Bruce Yu' })
+</script>
+
 <template>
   <div class="prose m-auto py-10">
     <h1>Bruce Yu</h1>

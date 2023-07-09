@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['@unocss/reset/tailwind.css', '~/assets/css/main.css', '~/assets/css/markdown.css', '~/assets/css/prose.css'],
+  css: ['@unocss/reset/tailwind.css', '~/assets/css/prose.css'],
 
   modules: ['@unocss/nuxt', '@nuxt/content', 'nuxt-icon'],
 
