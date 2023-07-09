@@ -1,3 +1,7 @@
 <template>
-  <div class="flex items-center justify-center h-full">hello world</div>
+  <div class="h-full">
+    <div class="flex flex-col items-center justify-center">
+      <list-post></list-post>
+    </div>
+  </div>
 </template>
