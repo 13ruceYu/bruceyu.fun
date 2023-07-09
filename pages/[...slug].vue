@@ -1,5 +1,5 @@
 <template>
-  <main class="prose">
+  <main class="prose m-auto">
     <ContentDoc />
   </main>
 </template>

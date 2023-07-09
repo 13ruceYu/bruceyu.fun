@@ -5,4 +5,10 @@ date: 2023-07-07
 
 hello
 
-world
+```js [file.js]{4-6,7} meta-info=val
+const a = 'foo'
+const b = 'bar'
+function c() {
+  console.log('c function')
+}
+```

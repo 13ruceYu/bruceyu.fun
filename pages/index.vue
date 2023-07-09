@@ -1,7 +1,8 @@
 <template>
-  <div class="h-full">
-    <div class="flex flex-col items-center justify-center">
-      <list-post></list-post>
-    </div>
+  <div class="prose m-auto py-10">
+    <h1>Bruce Yu</h1>
+    <p>
+      Hi there, I'm Bruce Yu, a frontend developer.
+    </p>
   </div>
 </template>
