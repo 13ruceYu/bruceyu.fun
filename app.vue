@@ -1,6 +1,7 @@
 <template>
   <NavBar />
   <nuxt-page />
+  <Footer />
 </template>
 
 <style>

@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['@unocss/reset/tailwind.css', '~/assets/css/prose.css'],
+  css: ['@unocss/reset/tailwind.css', '~/assets/css/main.css'],
 
   modules: ['@unocss/nuxt', '@nuxt/content', 'nuxt-icon', '@nuxtjs/color-mode'],
 
@@ -19,6 +19,13 @@ export default defineNuxtConfig({
     highlight: {
       theme: 'one-dark-pro',
     },
+    markdown: {
+      anchorLinks: true,
+      toc: {
+        depth: 3,
+      },
+    },
+    documentDriven: true,
   },
   colorMode: {
     preference: 'dark', // default value of $colorMode.preference
