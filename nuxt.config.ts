@@ -8,6 +8,12 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' },
       ],
+      meta: [
+        {
+          name: 'description',
+          content: 'Bruce Yu\'s portfolio',
+        },
+      ],
     },
   },
 
