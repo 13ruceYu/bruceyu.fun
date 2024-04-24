@@ -10,7 +10,7 @@ const { page } = useContent()
     <AnchorList class="anchor-list" />
     <div class="prose m-auto">
       <h1>{{ page.title }}</h1>
-      <p>{{ dayjs(page.date).format('YYYY-MM-DD') }}</p>
+      <p>{{ page.date && dayjs(page.date).format('YYYY-MM-DD') }}</p>
       <ContentDoc>
         <template #not-found>
           <h1>404</h1>

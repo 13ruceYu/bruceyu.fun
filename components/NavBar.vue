@@ -4,6 +4,9 @@
       <icon size="1.5rem" name="🏚️" />
     </nuxt-link>
     <div class="grid gap-4 grid-flow-col">
+      <nuxt-link to="/arts">
+        ARTS
+      </nuxt-link>
       <nuxt-link to="/posts">
         Posts
       </nuxt-link>
