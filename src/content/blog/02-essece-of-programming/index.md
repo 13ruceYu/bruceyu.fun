@@ -1,7 +1,7 @@
 ---
-title: "Essence of Programming"
-description: "What is the essence of programming?"
+title: "论编程"
+description: "什么是编程的本质？"
 date: "2024-10-03"
 ---
 
-The essence of programming is the reprocessing of information. Information(data) I/O.
+编程的本质是对信息的再加工，是信息的 I/O 操作。
