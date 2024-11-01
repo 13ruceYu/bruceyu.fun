@@ -1,47 +1,23 @@
 ---
-import Container from "@components/Container.astro";
-import { SITE } from "@consts";
-import BackToTop from "@components/BackToTop.astro";
+import Container from '@components/Container.astro'
+import BackToTop from '@components/BackToTop.astro'
 import { Icon } from 'astro-icon/components'
 ---
 
 <footer class="animate">
-  <Container>
-    <div class="relative">
-      <div class="absolute right-0 -top-20">
-        <BackToTop />
-      </div>
-    </div>
-    <div class="flex justify-between items-center">
-      <div class="flex gap-2">
-        &copy; 2024 {`|`} {SITE.NAME}
-        <a href="https://github.com/13ruceYu" target="_blank">
-          <Icon name={'carbon:logo-github'} class='size-5 cursor-pointer'></Icon>
-        </a>
-      </div>
-      <div class="flex flex-wrap gap-2 items-center">
-        <button
-          id="light-theme-button"
-          aria-label="Light theme"
-          class="group flex items-center justify-center rounded-full"
-        >
-          <Icon class={'size-5'} name="carbon:sun"></Icon>
-        </button>
-        <button
-          id="dark-theme-button"
-          aria-label="Dark theme"
-          class="group flex items-center justify-center rounded-full"
-        >
-          <Icon class={'size-5'} name="carbon:moon"></Icon>
-        </button>
-        <button
-          id="system-theme-button"
-          aria-label="System theme"
-          class="group flex items-center justify-center rounded-full"
-        >
-          <Icon class="size-5" name="carbon:devices"></Icon>
-        </button>
-      </div>
-    </div>
-  </Container>
+	<Container>
+		<div class="relative">
+			<div class="absolute right-0 -top-20">
+				<BackToTop />
+			</div>
+		</div>
+		<div class="flex justify-between items-center">
+			<div class="flex gap-2">
+				2024-PRESENT &copy; Bruce Yu
+				<a href="https://github.com/13ruceYu" target="_blank">
+					<Icon name={'carbon:logo-github'} class="size-5 cursor-pointer" />
+				</a>
+			</div>
+		</div>
+	</Container>
 </footer>
