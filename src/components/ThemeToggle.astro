@@ -4,7 +4,8 @@ import { Icon } from 'astro-icon/components'
 
 <button
 	title="Toggle theme"
-	class="theme-toggle relative h-7 w-7 rounded-lg bg-zinc-100 ring-zinc-400 hover:ring-2 dark:bg-zinc-800"
+	id="theme-toggle"
+	class="relative h-7 w-7 rounded-lg bg-zinc-100 ring-zinc-400 hover:ring-2 dark:bg-zinc-800"
 	aria-label="Toggle theme"
 >
 	<Icon
@@ -16,46 +17,3 @@ import { Icon } from 'astro-icon/components'
 		class="absolute start-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition dark:scale-100 dark:opacity-100"
 	/>
 </button>
-
-<script is:inline>
-	// 读取本地存储的主题或系统主题
-	const getTheme = () => {
-		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-			return localStorage.getItem('theme')
-		}
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			return 'dark'
-		}
-		return 'light'
-	}
-
-	// 设置主题
-	const setTheme = (theme) => {
-		if (theme === 'light') {
-			document.documentElement.classList.remove('dark')
-		} else {
-			document.documentElement.classList.add('dark')
-		}
-		localStorage.setItem('theme', theme)
-	}
-
-	// 初始化主题
-	setTheme(getTheme())
-
-	// 监听主题切换按钮点击
-	document.addEventListener('DOMContentLoaded', () => {
-		const themeToggle = document.querySelector('.theme-toggle')
-		if (!themeToggle) return
-
-		themeToggle.addEventListener('click', () => {
-			const currentTheme = getTheme()
-			const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
-			setTheme(newTheme)
-		})
-	})
-
-	// 监听系统主题变化
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-		setTheme(e.matches ? 'dark' : 'light')
-	})
-</script>
