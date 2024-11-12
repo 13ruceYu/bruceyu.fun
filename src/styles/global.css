@@ -43,7 +43,7 @@ article {
   @apply prose-headings:text-black prose-headings:dark:text-white;
 }
 
-@layer utilities {
+@layer base {
   article a {
     @apply font-sans text-current underline underline-offset-2;
     @apply decoration-black/15 dark:decoration-white/30;
@@ -52,6 +52,12 @@ article {
   article a:hover {
     @apply text-black dark:text-white;
     @apply decoration-black/25 dark:decoration-white/50;
+  }
+}
+
+@layer utilities {
+  .light-border {
+    @apply border border-black/15 dark:border-white/20;
   }
 }
 
