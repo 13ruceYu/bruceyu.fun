@@ -1,7 +1,7 @@
 ---
 import Container from '@components/Container.astro'
 import Link from '@components/Link.astro'
-import { SITE } from '@consts'
+// import { SITE } from '@consts'
 import ThemeToggle from './ThemeToggle.astro'
 ---
 
@@ -9,9 +9,7 @@ import ThemeToggle from './ThemeToggle.astro'
 	<Container>
 		<div class="flex flex-wrap gap-y-2 justify-between items-center">
 			<Link href="/" underline={false}>
-				<div class="font-semibold">
-					{SITE.NAME}
-				</div>
+				<div class="font-semibold font-hand text-3xl">bruceyu</div>
 			</Link>
 			<nav class="flex gap-1 items-center">
 				<Link href="/blog"> blog </Link>
