@@ -31,6 +31,7 @@
 
 		// 添加轨道控制器
 		const controls = new OrbitControls(camera, renderer.domElement)
+		controls.enableDamping = true
 
 		// 添加光源
 		const ambientLight = new THREE.AmbientLight('#eee', 2.4) // 降低环境光强度使阴影更明显
