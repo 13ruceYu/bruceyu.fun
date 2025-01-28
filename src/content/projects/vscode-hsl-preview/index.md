@@ -2,8 +2,9 @@
 title: "HSL Preview"
 description: "Preview HSL color in VS Code, for CSS, SCSS, LESS."
 date: "2024-08-28"
-demoURL: "[vscode marketplace](https://marketplace.visualstudio.com/items?itemName=bruceyuhb.hsl-preview)"
-repoURL: "[github](https://github.com/13ruceYu/hsl-preview)"
+demoURL: "https://marketplace.visualstudio.com/items?itemName=bruceyuhb.hsl-preview"
+repoURL: "https://github.com/13ruceYu/hsl-preview"
+logo: https://github.com/13ruceYu/hsl-preview/blob/master/res/icon.png?raw=true
 ---
 
 <p align="center">

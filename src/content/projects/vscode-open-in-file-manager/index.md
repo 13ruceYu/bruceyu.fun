@@ -1,9 +1,10 @@
 ---
 title: "Open in File Manager"
-description: "Add a button to open file manager (finder, file explorer) on the VSCode status bar."
+description: "Add a button to open file manager on the VSCode."
 date: "2025-01-09"
-demoURL: "[vscode marketplace](https://marketplace.visualstudio.com/items?itemName=bruceyuhb.open-in-file-manager)"
-repoURL: "[github](https://github.com/13ruceYu/vscode-open-in-file-manager)"
+demoURL: "https://marketplace.visualstudio.com/items?itemName=bruceyuhb.open-in-file-manager"
+repoURL: "https://github.com/13ruceYu/vscode-open-in-file-manager"
+logo: https://github.com/13ruceYu/vscode-open-in-file-manager/blob/main/res/icon.png?raw=true
 ---
 
 <p align="center">
