@@ -28,6 +28,11 @@ export const PROJECTS: Metadata = {
   DESCRIPTION: 'A collection of my projects, with links to repositories and demos.',
 }
 
+export const THOUGHTS: Metadata = {
+  TITLE: 'Thoughts',
+  DESCRIPTION: '一些我的愚蠢的，天才的，幽默的，无聊的想法。',
+}
+
 export const SOCIALS: Socials = [
   {
     NAME: 'GitHub',
