@@ -1,0 +1,63 @@
+---
+interface Props {
+	headings: {
+		depth: number
+		slug: string
+		text: string
+	}[]
+}
+
+const { headings } = Astro.props
+
+// Filter headings to include only h2 and h3
+const toc = headings.filter(({ depth }) => depth > 1 && depth < 4)
+---
+
+{
+	toc.length > 0 && (
+		<div class="toc-container mb-8 p-4 rounded-lg w-[12rem]">
+			<ul class="space-y-1">
+				{toc.map((heading) => (
+					<li class={`toc-item truncate ${heading.depth === 3 ? 'ml-4' : ''}`}>
+						<a
+							href={`#${heading.slug}`}
+							class="text-gray-700 text-xs dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors"
+							data-toc-link
+						>
+							{heading.text}
+						</a>
+					</li>
+				))}
+			</ul>
+		</div>
+	)
+}
+
+<script>
+	// Add smooth scrolling for TOC links
+	document.addEventListener('DOMContentLoaded', () => {
+		const tocLinks = document.querySelectorAll('[data-toc-link]')
+
+		tocLinks.forEach((link) => {
+			link.addEventListener('click', (e) => {
+				e.preventDefault()
+				const targetId = link.getAttribute('href')
+				const targetElement = document.querySelector(targetId || '')
+
+				if (targetElement) {
+					// Get the position of the target element
+					const yPosition = targetElement.getBoundingClientRect().top + window.pageYOffset
+
+					// Scroll to the target element with offset (80px from the top)
+					window.scrollTo({
+						top: yPosition - 80, // Add offset from the top
+						behavior: 'smooth'
+					})
+
+					// Update URL without causing a page jump
+					history.pushState({}, '', targetId)
+				}
+			})
+		})
+	})
+</script>
