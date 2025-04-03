@@ -10,21 +10,27 @@ interface Props {
 const { headings } = Astro.props
 
 // Filter headings to include only h2 and h3
-const toc = headings.filter(({ depth }) => depth > 1 && depth < 4)
+const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 ---
 
 {
 	toc.length > 0 && (
-		<div class="toc-container mb-8 p-4 rounded-lg w-[12rem]">
-			<ul class="space-y-1">
+		<div class="toc-container mb-8 p-4 rounded-lg w-[12rem] group">
+			<ul class="space-y-2">
 				{toc.map((heading) => (
-					<li class={`toc-item truncate ${heading.depth === 3 ? 'ml-4' : ''}`}>
+					<li class={`toc-item`}>
 						<a
 							href={`#${heading.slug}`}
-							class="text-gray-700 text-xs dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors"
+							class="toc-link text-gray-700 text-xs dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors flex items-center"
 							data-toc-link
+							data-target-id={heading.slug}
 						>
-							{heading.text}
+							<span
+								class={`${heading.depth === 3 ? 'w-3 mr-4' : 'w-4 mr-2'} inline-block h-1 bg-gray-500/20 shrink-0 rounded-sm`}
+							/>
+							<span class={`truncate toc-text group-hover:opacity-100 transition-opacity duration-200`}>
+								{heading.text}
+							</span>
 						</a>
 					</li>
 				))}
@@ -34,30 +40,127 @@ const toc = headings.filter(({ depth }) => depth > 1 && depth < 4)
 }
 
 <script>
-	// Add smooth scrolling for TOC links
-	document.addEventListener('DOMContentLoaded', () => {
-		const tocLinks = document.querySelectorAll('[data-toc-link]')
+	import { throttleAndDebounce } from '@lib/utils'
 
+	document.addEventListener('DOMContentLoaded', () => {
+		const tocContainer = document.querySelector('.toc-container') as HTMLElement
+		const tocLinks = document.querySelectorAll('[data-toc-link]')
+		const onScroll = throttleAndDebounce(setActiveLink, 100)
+		window.addEventListener('scroll', onScroll)
+		let prevActiveLink: HTMLAnchorElement | null = null
+		setActiveLink()
+
+		// Add click event listeners to TOC links for better scroll positioning
 		tocLinks.forEach((link) => {
 			link.addEventListener('click', (e) => {
 				e.preventDefault()
 				const targetId = link.getAttribute('href')
-				const targetElement = document.querySelector(targetId || '')
+				if (!targetId) return
 
+				const targetElement = document.querySelector(targetId)
 				if (targetElement) {
-					// Get the position of the target element
+					// Calculate position with increased offset (120px from top)
 					const yPosition = targetElement.getBoundingClientRect().top + window.pageYOffset
 
-					// Scroll to the target element with offset (80px from the top)
+					// Scroll with more offset to avoid navbar overlap
 					window.scrollTo({
-						top: yPosition - 80, // Add offset from the top
-						behavior: 'smooth'
+						top: yPosition - 120, // Increased offset from 80px to 120px
+						behavior: 'instant'
 					})
 
-					// Update URL without causing a page jump
+					// Update URL without jumping
 					history.pushState({}, '', targetId)
 				}
 			})
 		})
+
+		function getAbsoluteTop(element: HTMLElement): number {
+			let offsetTop = 0
+			while (element !== document.body) {
+				if (element === null) {
+					// child element is:
+					// - not attached to the DOM (display: none)
+					// - set to fixed position (not scrollable)
+					// - body or html element (null offsetParent)
+					return NaN
+				}
+
+				offsetTop += element.offsetTop
+				element = element.offsetParent as HTMLElement
+			}
+			return offsetTop
+		}
+
+		function activateLink(hash: string | null) {
+			if (prevActiveLink) {
+				prevActiveLink.classList.remove('active')
+			}
+
+			if (hash === null) {
+				prevActiveLink = null
+			} else {
+				prevActiveLink = tocContainer.querySelector(`a[href="#${hash}"]`) as HTMLAnchorElement
+			}
+			const activeLink = prevActiveLink
+
+			if (activeLink) {
+				activeLink.classList.add('active')
+			}
+		}
+
+		function setActiveLink() {
+			const scrollY = window.scrollY
+			const innerHeight = window.innerHeight
+			const offsetHeight = document.body.scrollHeight
+			const isBottom = Math.abs(scrollY + innerHeight - offsetHeight) < 6
+			const headers = Array.from(document.querySelectorAll('article :where(h2, h3)')).map((header) => {
+				const headerElement = header as HTMLElement
+				return {
+					link: headerElement.id,
+					top: getAbsoluteTop(headerElement)
+				}
+			})
+			// no headers available for active link
+			if (!headers.length) {
+				activateLink(null)
+				return
+			}
+
+			// page top
+			if (scrollY < 1) {
+				activateLink(null)
+				return
+			}
+
+			// page bottom - highlight last link
+			if (isBottom) {
+				activateLink(headers[headers.length - 1].link)
+				return
+			}
+
+			// find the last header above the top of viewport
+			let activeLink: string | null = null
+			for (const { link, top } of headers) {
+				if (top > scrollY + 120 + 4) {
+					break
+				}
+				activeLink = link
+			}
+			activateLink(activeLink)
+		}
 	})
 </script>
+
+<style>
+	.toc-link.active {
+		font-weight: bold;
+	}
+	.toc-text {
+		transition: opacity 0.3s ease;
+	}
+
+	/* Style for individual TOC items when hovered */
+	.toc-item:hover .toc-text {
+		opacity: 1 !important;
+	}
+</style>
