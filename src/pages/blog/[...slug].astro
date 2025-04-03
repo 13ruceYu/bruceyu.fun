@@ -38,11 +38,9 @@ const { Content, headings } = await post.render()
 			</div>
 		</div>
 
-		<div class="lg:fixed lg:right-4 lg:top-[20%] lg:max-w-[16rem] hidden lg:block">
-			<TableOfContents headings={headings} />
-		</div>
-
-		<div class="lg:hidden mb-8">
+		<div
+			class="lg:fixed lg:left-[50%] translate-x-[320px] lg:top-[50%] translate-y-[-50%] lg:max-w-[16rem] hidden lg:block"
+		>
 			<TableOfContents headings={headings} />
 		</div>
 

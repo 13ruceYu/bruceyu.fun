@@ -26,9 +26,11 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 							data-target-id={heading.slug}
 						>
 							<span
-								class={`${heading.depth === 3 ? 'w-3 mr-4' : 'w-4 mr-2'} inline-block h-1 bg-gray-500/20 shrink-0 rounded-sm`}
+								class={`title-bar ${heading.depth === 3 ? 'w-2 mr-4' : 'w-4 mr-2'} inline-block h-1 bg-gray-500/20 shrink-0 rounded-sm`}
 							/>
-							<span class={`truncate toc-text group-hover:opacity-100 transition-opacity duration-200`}>
+							<span
+								class={`truncate toc-text opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out`}
+							>
 								{heading.text}
 							</span>
 						</a>
@@ -92,21 +94,105 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 		}
 
 		function activateLink(hash: string | null) {
-			if (prevActiveLink) {
-				prevActiveLink.classList.remove('active')
-			}
+			// First, remove active class from all links
+			document.querySelectorAll('.toc-link').forEach((link) => {
+				link.classList.remove('active')
+				const textEl = link.querySelector('.toc-text')
+				textEl?.classList.add('opacity-0')
+				textEl?.classList.remove('opacity-100')
+
+				// Reset title-bar styles
+				const titleBar = link.querySelector('.title-bar')
+				titleBar?.classList.remove('bg-pink-500', 'w-6', 'w-4')
+				titleBar?.classList.add('bg-gray-500/20')
+
+				// Restore original width based on heading level
+				if (link.closest('li')?.querySelector('a[data-target-id]')?.getAttribute('data-target-id')) {
+					const targetId = link.closest('li')?.querySelector('a[data-target-id]')?.getAttribute('data-target-id')
+					const heading = document.getElementById(targetId || '')
+					if (heading && heading.tagName === 'H3') {
+						titleBar?.classList.add('w-2')
+					} else {
+						titleBar?.classList.add('w-4')
+					}
+				}
+			})
 
 			if (hash === null) {
 				prevActiveLink = null
-			} else {
-				prevActiveLink = tocContainer.querySelector(`a[href="#${hash}"]`) as HTMLAnchorElement
+				return
 			}
-			const activeLink = prevActiveLink
 
-			if (activeLink) {
-				activeLink.classList.add('active')
+			const currentHash = hash
+			prevActiveLink = tocContainer.querySelector(`a[href="#${currentHash}"]`) as HTMLAnchorElement
+
+			if (prevActiveLink) {
+				prevActiveLink.classList.add('active')
+				const textEl = prevActiveLink.querySelector('.toc-text')
+				textEl?.classList.remove('opacity-0')
+				textEl?.classList.add('opacity-100')
+
+				// Activate title-bar
+				const titleBar = prevActiveLink.querySelector('.title-bar')
+				titleBar?.classList.remove('bg-gray-500/20')
+				titleBar?.classList.add('bg-pink-500', 'w-6')
+
+				// Check if current active link is an h3
+				const activeHeading = document.getElementById(currentHash)
+				if (activeHeading && activeHeading.tagName === 'H3') {
+					// Find the parent h2 heading
+					let currentElement = activeHeading
+					let parentH2 = null
+
+					while (currentElement && !parentH2) {
+						currentElement = currentElement.previousElementSibling as HTMLElement
+						if (currentElement && currentElement.tagName === 'H2') {
+							parentH2 = currentElement
+						}
+					}
+
+					// If parent h2 found, activate its TOC link as well
+					if (parentH2 && parentH2.id) {
+						const parentLink = tocContainer.querySelector(`a[href="#${parentH2.id}"]`) as HTMLAnchorElement
+						if (parentLink) {
+							parentLink.classList.add('active')
+							const parentTextEl = parentLink.querySelector('.toc-text')
+							parentTextEl?.classList.remove('opacity-0')
+							parentTextEl?.classList.add('opacity-100')
+						}
+					}
+				}
 			}
 		}
+
+		// Add hover effects to individual TOC items
+		tocLinks.forEach((link) => {
+			link.addEventListener('mouseenter', () => {
+				const textEl = link.querySelector('.toc-text')
+				textEl?.classList.remove('opacity-0')
+				textEl?.classList.add('opacity-100')
+
+				// Highlight title-bar on hover if not active
+				if (!link.classList.contains('active')) {
+					const titleBar = link.querySelector('.title-bar')
+					titleBar?.classList.add('bg-gray-500/40')
+					titleBar?.classList.remove('bg-gray-500/20')
+				}
+			})
+
+			link.addEventListener('mouseleave', () => {
+				if (!link.classList.contains('active')) {
+					const textEl = link.querySelector('.toc-text')
+					textEl?.classList.add('opacity-0')
+					textEl?.classList.remove('opacity-100')
+
+					// Reset title-bar on mouse leave if not active
+					const titleBar = link.querySelector('.title-bar')
+					titleBar?.classList.remove('bg-gray-500/40')
+					titleBar?.classList.add('bg-gray-500/20')
+				}
+			})
+		})
 
 		function setActiveLink() {
 			const scrollY = window.scrollY
@@ -117,7 +203,8 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 				const headerElement = header as HTMLElement
 				return {
 					link: headerElement.id,
-					top: getAbsoluteTop(headerElement)
+					top: getAbsoluteTop(headerElement),
+					depth: headerElement.tagName === 'H2' ? 2 : 3
 				}
 			})
 			// no headers available for active link
@@ -155,11 +242,22 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 	.toc-link.active {
 		font-weight: bold;
 	}
-	.toc-text {
-		transition: opacity 0.3s ease;
+
+	.toc-link.active .title-bar {
+		background-color: gray; /* Tailwind pink-500 */
 	}
 
-	/* Style for individual TOC items when hovered */
+	.title-bar {
+		transition:
+			width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+			background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.toc-text {
+		transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		white-space: nowrap;
+	}
+
 	.toc-item:hover .toc-text {
 		opacity: 1 !important;
 	}
