@@ -18,19 +18,16 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 		<div class="toc-container mb-8 p-4 rounded-lg w-[12rem] group">
 			<ul class="space-y-2">
 				{toc.map((heading) => (
-					<li class={`toc-item`}>
+					<li class={`toc-item ${heading.depth === 3 ? 'is-h3' : 'is-h2'}`}>
 						<a
 							href={`#${heading.slug}`}
 							class="toc-link text-gray-700 text-xs dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors flex items-center"
 							data-toc-link
 							data-target-id={heading.slug}
+							data-depth={heading.depth}
 						>
-							<span
-								class={`title-bar ${heading.depth === 3 ? 'w-2 mr-4' : 'w-4 mr-2'} inline-block h-1 bg-gray-500/20 shrink-0 rounded-sm`}
-							/>
-							<span
-								class={`truncate toc-text opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out`}
-							>
+							<span class="title-bar inline-block h-1 bg-gray-500/20 shrink-0 rounded-sm transition-all duration-300" />
+							<span class="truncate toc-text opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
 								{heading.text}
 							</span>
 						</a>
@@ -94,28 +91,9 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 		}
 
 		function activateLink(hash: string | null) {
-			// First, remove active class from all links
+			// Remove active class from all links
 			document.querySelectorAll('.toc-link').forEach((link) => {
 				link.classList.remove('active')
-				const textEl = link.querySelector('.toc-text')
-				textEl?.classList.add('opacity-0')
-				textEl?.classList.remove('opacity-100')
-
-				// Reset title-bar styles
-				const titleBar = link.querySelector('.title-bar')
-				titleBar?.classList.remove('bg-pink-500', 'w-6', 'w-4')
-				titleBar?.classList.add('bg-gray-500/20')
-
-				// Restore original width based on heading level
-				if (link.closest('li')?.querySelector('a[data-target-id]')?.getAttribute('data-target-id')) {
-					const targetId = link.closest('li')?.querySelector('a[data-target-id]')?.getAttribute('data-target-id')
-					const heading = document.getElementById(targetId || '')
-					if (heading && heading.tagName === 'H3') {
-						titleBar?.classList.add('w-2')
-					} else {
-						titleBar?.classList.add('w-4')
-					}
-				}
 			})
 
 			if (hash === null) {
@@ -123,21 +101,14 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 				return
 			}
 
+			// Add active class to the current link
 			const currentHash = hash
 			prevActiveLink = tocContainer.querySelector(`a[href="#${currentHash}"]`) as HTMLAnchorElement
 
 			if (prevActiveLink) {
 				prevActiveLink.classList.add('active')
-				const textEl = prevActiveLink.querySelector('.toc-text')
-				textEl?.classList.remove('opacity-0')
-				textEl?.classList.add('opacity-100')
 
-				// Activate title-bar
-				const titleBar = prevActiveLink.querySelector('.title-bar')
-				titleBar?.classList.remove('bg-gray-500/20')
-				titleBar?.classList.add('bg-pink-500', 'w-6')
-
-				// Check if current active link is an h3
+				// If this is an h3, also activate its parent h2
 				const activeHeading = document.getElementById(currentHash)
 				if (activeHeading && activeHeading.tagName === 'H3') {
 					// Find the parent h2 heading
@@ -153,46 +124,12 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 
 					// If parent h2 found, activate its TOC link as well
 					if (parentH2 && parentH2.id) {
-						const parentLink = tocContainer.querySelector(`a[href="#${parentH2.id}"]`) as HTMLAnchorElement
-						if (parentLink) {
-							parentLink.classList.add('active')
-							const parentTextEl = parentLink.querySelector('.toc-text')
-							parentTextEl?.classList.remove('opacity-0')
-							parentTextEl?.classList.add('opacity-100')
-						}
+						const parentLink = tocContainer.querySelector(`a[href="#${parentH2.id}"]`)
+						parentLink?.classList.add('active', 'parent-active')
 					}
 				}
 			}
 		}
-
-		// Add hover effects to individual TOC items
-		tocLinks.forEach((link) => {
-			link.addEventListener('mouseenter', () => {
-				const textEl = link.querySelector('.toc-text')
-				textEl?.classList.remove('opacity-0')
-				textEl?.classList.add('opacity-100')
-
-				// Highlight title-bar on hover if not active
-				if (!link.classList.contains('active')) {
-					const titleBar = link.querySelector('.title-bar')
-					titleBar?.classList.add('bg-gray-500/40')
-					titleBar?.classList.remove('bg-gray-500/20')
-				}
-			})
-
-			link.addEventListener('mouseleave', () => {
-				if (!link.classList.contains('active')) {
-					const textEl = link.querySelector('.toc-text')
-					textEl?.classList.add('opacity-0')
-					textEl?.classList.remove('opacity-100')
-
-					// Reset title-bar on mouse leave if not active
-					const titleBar = link.querySelector('.title-bar')
-					titleBar?.classList.remove('bg-gray-500/40')
-					titleBar?.classList.add('bg-gray-500/20')
-				}
-			})
-		})
 
 		function setActiveLink() {
 			const scrollY = window.scrollY
@@ -239,14 +176,43 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 </script>
 
 <style>
+	/* Base styles for TOC items */
+	.toc-item.is-h2 .title-bar {
+		@apply w-4 mr-2;
+	}
+
+	.toc-item.is-h3 .title-bar {
+		@apply w-2 mr-3;
+	}
+
+	/* Hover styles */
+	.toc-item:hover .title-bar {
+		@apply bg-gray-500/40;
+	}
+
+	/* Active styles */
 	.toc-link.active {
-		font-weight: bold;
+		@apply font-bold;
 	}
 
 	.toc-link.active .title-bar {
-		background-color: gray; /* Tailwind pink-500 */
+		@apply bg-gray-500/50;
 	}
 
+	.toc-link.active .toc-text {
+		@apply opacity-100;
+	}
+
+	/* Parent active styles (when parent h2 of active h3) */
+	.toc-link.parent-active {
+		@apply font-semibold;
+	}
+
+	.toc-link.parent-active .title-bar {
+		@apply bg-gray-500/40 w-5;
+	}
+
+	/* Transitions */
 	.title-bar {
 		transition:
 			width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -258,7 +224,8 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 		white-space: nowrap;
 	}
 
+	/* Individual hover effect */
 	.toc-item:hover .toc-text {
-		opacity: 1 !important;
+		@apply opacity-100;
 	}
 </style>
