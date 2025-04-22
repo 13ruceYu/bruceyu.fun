@@ -13,9 +13,9 @@ const { headings } = Astro.props
 const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 ---
 
-{
-	toc.length > 0 && (
-		<div class="toc-container mb-8 p-4 rounded-lg w-[12rem] group">
+<div class="toc-container mb-8 p-4 rounded-lg w-[12rem] group">
+	{
+		toc.length > 0 && (
 			<ul class="space-y-2">
 				{toc.map((heading) => (
 					<li class={`toc-item ${heading.depth === 3 ? 'is-h3' : 'is-h2'}`}>
@@ -34,18 +34,25 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 					</li>
 				))}
 			</ul>
-		</div>
-	)
-}
+		)
+	}
+</div>
 
 <script>
 	import { throttleAndDebounce } from '@lib/utils'
 
-	document.addEventListener('DOMContentLoaded', () => {
+	document.addEventListener('astro:page-load', () => {
+		initTableOfContents()
+	})
+
+	// Initialize TOC logic
+	function initTableOfContents() {
 		const tocContainer = document.querySelector('.toc-container') as HTMLElement
+		if (!tocContainer) return
+
 		const tocLinks = document.querySelectorAll('[data-toc-link]')
 		const onScroll = throttleAndDebounce(setActiveLink, 100)
-		window.addEventListener('scroll', onScroll)
+		window.addEventListener('scroll', onScroll, { passive: true })
 		let prevActiveLink: HTMLAnchorElement | null = null
 		setActiveLink()
 
@@ -63,7 +70,7 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 
 					// Scroll with more offset to avoid navbar overlap
 					window.scrollTo({
-						top: yPosition - 120, // Increased offset from 80px to 120px
+						top: yPosition - 120,
 						behavior: 'instant'
 					})
 
@@ -77,13 +84,8 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 			let offsetTop = 0
 			while (element !== document.body) {
 				if (element === null) {
-					// child element is:
-					// - not attached to the DOM (display: none)
-					// - set to fixed position (not scrollable)
-					// - body or html element (null offsetParent)
 					return NaN
 				}
-
 				offsetTop += element.offsetTop
 				element = element.offsetParent as HTMLElement
 			}
@@ -111,7 +113,6 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 				// If this is an h3, also activate its parent h2
 				const activeHeading = document.getElementById(currentHash)
 				if (activeHeading && activeHeading.tagName === 'H3') {
-					// Find the parent h2 heading
 					let currentElement = activeHeading
 					let parentH2 = null
 
@@ -122,7 +123,6 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 						}
 					}
 
-					// If parent h2 found, activate its TOC link as well
 					if (parentH2 && parentH2.id) {
 						const parentLink = tocContainer.querySelector(`a[href="#${parentH2.id}"]`)
 						parentLink?.classList.add('active', 'parent-active')
@@ -144,25 +144,21 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 					depth: headerElement.tagName === 'H2' ? 2 : 3
 				}
 			})
-			// no headers available for active link
 			if (!headers.length) {
 				activateLink(null)
 				return
 			}
 
-			// page top
 			if (scrollY < 1) {
 				activateLink(null)
 				return
 			}
 
-			// page bottom - highlight last link
 			if (isBottom) {
 				activateLink(headers[headers.length - 1].link)
 				return
 			}
 
-			// find the last header above the top of viewport
 			let activeLink: string | null = null
 			for (const { link, top } of headers) {
 				if (top > scrollY + 120 + 4) {
@@ -172,7 +168,7 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 			}
 			activateLink(activeLink)
 		}
-	})
+	}
 </script>
 
 <style>
