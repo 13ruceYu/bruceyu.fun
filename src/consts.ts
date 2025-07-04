@@ -3,6 +3,7 @@ import type { Site, Metadata, Socials } from '@types'
 export const SITE: Site = {
   NAME: 'Bruce Yu',
   EMAIL: 'bruceyuhongbo@gmail.com',
+  DESCRIPTION: 'Bruce\'s Portfolio',
   NUM_POSTS_ON_HOMEPAGE: 10,
   NUM_WORKS_ON_HOMEPAGE: 2,
   NUM_PROJECTS_ON_HOMEPAGE: 8,
