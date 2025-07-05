@@ -63,7 +63,9 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 				const targetId = link.getAttribute('href')
 				if (!targetId) return
 
-				const targetElement = document.querySelector(targetId)
+				// Extract the ID from the href (remove the #)
+				const elementId = targetId.substring(1)
+				const targetElement = document.getElementById(elementId)
 				if (targetElement) {
 					// Calculate position with increased offset (120px from top)
 					const yPosition = targetElement.getBoundingClientRect().top + window.pageYOffset
