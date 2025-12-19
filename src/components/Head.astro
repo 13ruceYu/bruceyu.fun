@@ -86,19 +86,8 @@ const { title, description } = Astro.props
 		const backToPrev = document.getElementById('back-to-prev')
 		backToPrev?.addEventListener('click', () => window.history.back())
 
-		const themeToggleBtn = document.getElementById('theme-toggle')
-		themeToggleBtn?.addEventListener('click', () => {
-			const currentTheme = localStorage.getItem('theme')
-			console.log(currentTheme)
-			const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
-			toggleTheme(newTheme === 'dark')
-			localStorage.setItem('theme', newTheme)
-		})
-
 		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-			if (localStorage.theme === 'system') {
-				toggleTheme(event.matches)
-			}
+			toggleTheme(event.matches)
 		})
 
 		document.addEventListener('scroll', onScroll)
@@ -159,13 +148,7 @@ const { title, description } = Astro.props
 	}
 
 	function preloadTheme() {
-		const userTheme = localStorage.theme
-
-		if (userTheme === 'light' || userTheme === 'dark') {
-			toggleTheme(userTheme === 'dark')
-		} else {
-			toggleTheme(window.matchMedia('(prefers-color-scheme: dark)').matches)
-		}
+		toggleTheme(window.matchMedia('(prefers-color-scheme: dark)').matches)
 	}
 
 	document.addEventListener('DOMContentLoaded', () => init())
