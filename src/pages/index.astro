@@ -25,6 +25,18 @@ const blog = (await getCollection('blog'))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 	.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE)
 
+// Group blog posts by year
+const blogByYear = blog.reduce((acc, post) => {
+	const year = post.data.date.getFullYear()
+	if (!acc[year]) {
+		acc[year] = []
+	}
+	acc[year].push(post)
+	return acc
+}, {} as Record<number, typeof blog>)
+
+const years = Object.keys(blogByYear).sort((a, b) => Number(b) - Number(a))
+
 const projects = (await getCollection('projects'))
 	.filter((project) => !project.data.draft)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -35,7 +47,7 @@ const projects = (await getCollection('projects'))
 	<Container>
 		<!-- <Banner /> -->
 		<h4 class="animate font-semibold text-black dark:text-white">
-			Hi, I'm Bruce <span class="text-xl">👋🏻</span>
+			Hi, I'm Bruce 波波 <span class="text-xl">👋🏻</span>
 		</h4>
 		<div class="space-y-16">
 			<section>
@@ -47,15 +59,24 @@ const projects = (await getCollection('projects'))
 					<h5 class="font-semibold text-black dark:text-white">Latest posts</h5>
 					<Link href="/blog"> See all posts </Link>
 				</div>
-				<ul class="flex flex-col gap-4">
+				<div class="space-y-8">
 					{
-						blog.map((post) => (
-							<li>
-								<ArrowCard entry={post} />
-							</li>
+						years.map((year) => (
+							<div class="space-y-4">
+								<h6 class="text-sm font-medium text-black/60 dark:text-white/60">
+									{year}
+								</h6>
+								<ul class="flex flex-col gap-4">
+									{blogByYear[Number(year)].map((post) => (
+										<li>
+											<ArrowCard entry={post} />
+										</li>
+									))}
+								</ul>
+							</div>
 						))
 					}
-				</ul>
+				</div>
 			</section>
 
 			<section class="animate space-y-6">
