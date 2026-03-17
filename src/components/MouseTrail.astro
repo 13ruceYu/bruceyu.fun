@@ -1,36 +1,91 @@
-<script>
-  const EMOJIS = ['✨', '🌟', '💫', '⭐', '🎈', '🍀', '🌸', '🦋', '🌈', '🎉', '💥', '🔥', '❄️', '🍭', '🎵']
+---
+import { getIconData, iconToSVG } from '@iconify/utils'
+import logosIconSet from '@iconify-json/logos/icons.json'
 
-  let lastEmoji = ''
+type LogoItem = { svg: string; alt: string }
+
+// 图标名称来自 https://icones.js.org/collection/logos
+const logoNames: Array<[string, string]> = [
+  ['javascript', 'JavaScript'],
+  ['typescript-icon', 'TypeScript'],
+  ['vue', 'Vue'],
+  ['astro', 'Astro'],
+  ['nuxt-icon', 'Nuxt'],
+  ['nextjs-icon', 'Next.js'],
+  ['nodejs-icon', 'Node.js'],
+  ['tailwindcss-icon', 'Tailwind CSS'],
+  ['react', 'React'],
+  ['html-5', 'HTML'],
+  ['css-3', 'CSS'],
+  ['github-icon', 'GitHub'],
+  ['bilibili', 'Bilibili'],
+]
+
+function buildSVG(name: string): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const iconData = getIconData(logosIconSet as any, name)
+  if (!iconData) return ''
+  const { attributes, body } = iconToSVG(iconData, { width: '1em', height: '1em' })
+  const attrsStr = Object.entries(attributes)
+    .map(([k, v]) => `${k}="${v}"`)
+    .join(' ')
+  return `<svg ${attrsStr}>${body}</svg>`
+}
+
+const logoItems: LogoItem[] = logoNames
+  .map(([name, alt]) => ({ svg: buildSVG(name), alt }))
+  .filter(item => item.svg !== '')
+---
+
+<script define:vars={{ logoItems }}>
+  // logoItems 由构建时注入，类型：Array<{ svg: string; alt: string }>
+  const EMOJIS = [
+    // 程序员 / 开发者
+    '💻', '👨‍💻', '🧑‍💻', '🚀', '⌨️',
+    // 跑步
+    '🏃', '👟',
+    // 乒乓球
+    '🏓',
+    // 羽毛球
+    '🏸',
+    // Switch 游戏
+    '🎮', '🕹️',
+    // 公园 / 大自然
+    '🌳', '🌸', '🌻', '🌼', '🍀',
+    // 晴天 / 雨天
+    '☀️', '🌧️', '🌈',
+  ]
+
+  const ITEMS = [...EMOJIS, ...logoItems]
+
+  let lastKey = ''
   let lastTime = 0
   let lastX = 0
   let lastY = 0
-  const THROTTLE = 80 // ms
+  const THROTTLE = 80     // ms
   const MIN_DISTANCE = 30 // px，移动距离阈值
 
-  function randomEmoji() {
-    let emoji
+  function randomItem() {
+    let item
+    let key
     do {
-      emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)]
-    } while (emoji === lastEmoji)
-    lastEmoji = emoji
-    return emoji
+      item = ITEMS[Math.floor(Math.random() * ITEMS.length)]
+      key = typeof item === 'string' ? item : item.svg
+    } while (key === lastKey)
+    lastKey = key
+    return item
   }
 
-  function spawnEmoji(x: number, y: number) {
-    const el = document.createElement('span')
-    el.textContent = randomEmoji()
-
+  function spawnItem(x, y) {
+    const item = randomItem()
     const size = 16 + Math.random() * 14 // 16~30px
     const driftX = (Math.random() - 0.5) * 60 // 左右随机飘移
     const duration = 800 + Math.random() * 400 // 800~1200ms
 
-    el.style.cssText = `
+    const baseStyle = `
       position: fixed;
       left: ${x}px;
       top: ${y}px;
-      font-size: ${size}px;
-      line-height: 1;
       pointer-events: none;
       user-select: none;
       z-index: 99999;
@@ -39,11 +94,25 @@
       --drift-x: ${driftX}px;
     `
 
+    let el
+    if (typeof item === 'string') {
+      el = document.createElement('span')
+      el.textContent = item
+      el.style.cssText = baseStyle + `font-size: ${size}px; line-height: 1;`
+    } else {
+      // 内联 SVG，构建时已生成，无网络请求
+      const wrapper = document.createElement('span')
+      wrapper.innerHTML = item.svg
+      el = wrapper.firstElementChild
+      el.setAttribute('aria-label', item.alt)
+      el.style.cssText = baseStyle + `width: ${size}px; height: ${size}px; display: block;`
+    }
+
     document.body.appendChild(el)
     setTimeout(() => el.remove(), duration)
   }
 
-  function handleMouseMove(e: MouseEvent) {
+  function handleMouseMove(e) {
     const now = Date.now()
     if (now - lastTime < THROTTLE) return
 
@@ -55,7 +124,7 @@
     lastTime = now
     lastX = e.clientX
     lastY = e.clientY
-    spawnEmoji(e.clientX, e.clientY)
+    spawnItem(e.clientX, e.clientY)
   }
 
   document.addEventListener('mousemove', handleMouseMove)

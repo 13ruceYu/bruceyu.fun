@@ -86,6 +86,17 @@ const { title, description } = Astro.props
 		const backToPrev = document.getElementById('back-to-prev')
 		backToPrev?.addEventListener('click', () => window.history.back())
 
+		const themeToggle = document.getElementById('theme-toggle')
+		themeToggle?.addEventListener('click', () => {
+			const isDark = !document.documentElement.classList.contains('dark')
+			if (document.startViewTransition) {
+				document.startViewTransition(() => toggleTheme(isDark))
+			} else {
+				toggleTheme(isDark)
+			}
+			persistTheme(isDark)
+		})
+
 		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
 			toggleTheme(event.matches)
 		})
@@ -119,9 +130,18 @@ const { title, description } = Astro.props
 		})
 	}
 
+	// 直接切换 class，无过渡抑制（用于 startViewTransition 内部或页面加载时）
+	function applyTheme(dark) {
+		if (dark) {
+			document.documentElement.classList.add('dark')
+		} else {
+			document.documentElement.classList.remove('dark')
+		}
+	}
+
+	// 页面加载时使用：禁用过渡，防止 FOUC
 	function toggleTheme(dark) {
 		const css = document.createElement('style')
-
 		css.appendChild(
 			document.createTextNode(
 				`* {
@@ -134,21 +154,23 @@ const { title, description } = Astro.props
         `
 			)
 		)
-
 		document.head.appendChild(css)
-
-		if (dark) {
-			document.documentElement.classList.add('dark')
-		} else {
-			document.documentElement.classList.remove('dark')
-		}
-
+		applyTheme(dark)
 		window.getComputedStyle(css).opacity
 		document.head.removeChild(css)
 	}
 
+	function persistTheme(dark) {
+		localStorage.setItem('theme', dark ? 'dark' : 'light')
+	}
+
 	function preloadTheme() {
-		toggleTheme(window.matchMedia('(prefers-color-scheme: dark)').matches)
+		const stored = localStorage.getItem('theme')
+		if (stored) {
+			toggleTheme(stored === 'dark')
+		} else {
+			toggleTheme(window.matchMedia('(prefers-color-scheme: dark)').matches)
+		}
 	}
 
 	document.addEventListener('DOMContentLoaded', () => init())

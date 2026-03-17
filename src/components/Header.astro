@@ -1,6 +1,7 @@
 ---
 import Container from '@components/Container.astro'
 import Link from '@components/Link.astro'
+import ThemeToggle from '@components/ThemeToggle.astro'
 // import { SITE } from '@consts'
 ---
 
@@ -16,6 +17,9 @@ import Link from '@components/Link.astro'
 				<Link href="/projects"> projects </Link>
 				<!-- <span>{`/`}</span>
 				<Link href="/thoughts"> thoughts </Link> -->
+				<span class="ml-2">
+					<ThemeToggle />
+				</span>
 			</nav>
 		</div>
 	</Container>
