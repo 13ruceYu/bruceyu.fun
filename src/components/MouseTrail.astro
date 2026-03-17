@@ -1,0 +1,81 @@
+<script>
+  const EMOJIS = ['✨', '🌟', '💫', '⭐', '🎈', '🍀', '🌸', '🦋', '🌈', '🎉', '💥', '🔥', '❄️', '🍭', '🎵']
+
+  let lastEmoji = ''
+  let lastTime = 0
+  let lastX = 0
+  let lastY = 0
+  const THROTTLE = 80 // ms
+  const MIN_DISTANCE = 30 // px，移动距离阈值
+
+  function randomEmoji() {
+    let emoji
+    do {
+      emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)]
+    } while (emoji === lastEmoji)
+    lastEmoji = emoji
+    return emoji
+  }
+
+  function spawnEmoji(x: number, y: number) {
+    const el = document.createElement('span')
+    el.textContent = randomEmoji()
+
+    const size = 16 + Math.random() * 14 // 16~30px
+    const driftX = (Math.random() - 0.5) * 60 // 左右随机飘移
+    const duration = 800 + Math.random() * 400 // 800~1200ms
+
+    el.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
+      font-size: ${size}px;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      animation: mouse-trail-float ${duration}ms ease-out forwards;
+      --drift-x: ${driftX}px;
+    `
+
+    document.body.appendChild(el)
+    setTimeout(() => el.remove(), duration)
+  }
+
+  function handleMouseMove(e: MouseEvent) {
+    const now = Date.now()
+    if (now - lastTime < THROTTLE) return
+
+    const dx = e.clientX - lastX
+    const dy = e.clientY - lastY
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    if (dist < MIN_DISTANCE) return
+
+    lastTime = now
+    lastX = e.clientX
+    lastY = e.clientY
+    spawnEmoji(e.clientX, e.clientY)
+  }
+
+  document.addEventListener('mousemove', handleMouseMove)
+
+  // 页面切换时重新绑定（Astro View Transitions）
+  document.addEventListener('astro:page-load', () => {
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mousemove', handleMouseMove)
+  })
+</script>
+
+<style is:global>
+  @keyframes mouse-trail-float {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(0) translateX(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) translateY(-60px) translateX(var(--drift-x)) scale(0.4);
+    }
+  }
+</style>
