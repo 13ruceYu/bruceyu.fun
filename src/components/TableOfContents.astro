@@ -68,7 +68,7 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 				const targetElement = document.getElementById(elementId)
 				if (targetElement) {
 					// Calculate position with increased offset (120px from top)
-					const yPosition = targetElement.getBoundingClientRect().top + window.pageYOffset
+					const yPosition = targetElement.getBoundingClientRect().top + window.scrollY
 
 					// Scroll with more offset to avoid navbar overlap
 					window.scrollTo({

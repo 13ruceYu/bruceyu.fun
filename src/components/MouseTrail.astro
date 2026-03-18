@@ -37,103 +37,13 @@ const logoItems: LogoItem[] = logoNames
   .filter(item => item.svg !== '')
 ---
 
-<script define:vars={{ logoItems }}>
-  // logoItems 由构建时注入，类型：Array<{ svg: string; alt: string }>
-  const EMOJIS = [
-    // 程序员 / 开发者
-    '💻', '👨‍💻', '🧑‍💻', '🚀', '⌨️',
-    // 跑步
-    '🏃', '👟',
-    // 乒乓球
-    '🏓',
-    // 羽毛球
-    '🏸',
-    // Switch 游戏
-    '🎮', '🕹️',
-    // 公园 / 大自然
-    '🌳', '🌸', '🌻', '🌼', '🍀',
-    // 晴天 / 雨天
-    '☀️', '🌧️', '🌈',
-  ]
+<script is:inline define:vars={{ logoItems }}>
+  // 将构建时数据挂载到 window，供 mouseTrail.ts 读取
+  window.__mouseTrailLogos = logoItems
+</script>
 
-  const ITEMS = [...EMOJIS, ...logoItems]
-
-  let lastKey = ''
-  let lastTime = 0
-  let lastX = 0
-  let lastY = 0
-  const THROTTLE = 80     // ms
-  const MIN_DISTANCE = 30 // px，移动距离阈值
-
-  function randomItem() {
-    let item
-    let key
-    do {
-      item = ITEMS[Math.floor(Math.random() * ITEMS.length)]
-      key = typeof item === 'string' ? item : item.svg
-    } while (key === lastKey)
-    lastKey = key
-    return item
-  }
-
-  function spawnItem(x, y) {
-    const item = randomItem()
-    const size = 16 + Math.random() * 14 // 16~30px
-    const driftX = (Math.random() - 0.5) * 60 // 左右随机飘移
-    const duration = 800 + Math.random() * 400 // 800~1200ms
-
-    const baseStyle = `
-      position: fixed;
-      left: ${x}px;
-      top: ${y}px;
-      pointer-events: none;
-      user-select: none;
-      z-index: 99999;
-      transform: translate(-50%, -50%);
-      animation: mouse-trail-float ${duration}ms ease-out forwards;
-      --drift-x: ${driftX}px;
-    `
-
-    let el
-    if (typeof item === 'string') {
-      el = document.createElement('span')
-      el.textContent = item
-      el.style.cssText = baseStyle + `font-size: ${size}px; line-height: 1;`
-    } else {
-      // 内联 SVG，构建时已生成，无网络请求
-      const wrapper = document.createElement('span')
-      wrapper.innerHTML = item.svg
-      el = wrapper.firstElementChild
-      el.setAttribute('aria-label', item.alt)
-      el.style.cssText = baseStyle + `width: ${size}px; height: ${size}px; display: block;`
-    }
-
-    document.body.appendChild(el)
-    setTimeout(() => el.remove(), duration)
-  }
-
-  function handleMouseMove(e) {
-    const now = Date.now()
-    if (now - lastTime < THROTTLE) return
-
-    const dx = e.clientX - lastX
-    const dy = e.clientY - lastY
-    const dist = Math.sqrt(dx * dx + dy * dy)
-    if (dist < MIN_DISTANCE) return
-
-    lastTime = now
-    lastX = e.clientX
-    lastY = e.clientY
-    spawnItem(e.clientX, e.clientY)
-  }
-
-  document.addEventListener('mousemove', handleMouseMove)
-
-  // 页面切换时重新绑定（Astro View Transitions）
-  document.addEventListener('astro:page-load', () => {
-    document.removeEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mousemove', handleMouseMove)
-  })
+<script>
+  import '../scripts/mouseTrail'
 </script>
 
 <style is:global>
