@@ -26,12 +26,12 @@ body {
   @apply font-sans antialiased;
   @apply flex flex-col;
   @apply bg-stone-100 dark:bg-stone-900;
-  @apply text-black/50 dark:text-white/75;
+  @apply text-black/60 dark:text-white/75;
 }
 
 header {
   @apply fixed top-0 left-0 right-0 z-50 py-5;
-  @apply bg-white/75 dark:bg-black/25;
+  @apply bg-white/80 dark:bg-black/40;
   @apply backdrop-blur-sm saturate-200;
 }
 
@@ -47,6 +47,7 @@ article {
   @apply max-w-full prose dark:prose-invert prose-img:mx-auto prose-img:my-auto;
   @apply prose-headings:font-semibold prose-p:font-serif;
   @apply prose-headings:text-black prose-headings:dark:text-white;
+  @apply prose-headings:tracking-tight;
 }
 
 @layer base {

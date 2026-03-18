@@ -185,7 +185,7 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 
 	/* Hover styles */
 	.toc-item:hover .title-bar {
-		@apply bg-gray-500/40;
+		@apply bg-black/25 dark:bg-white/25;
 	}
 
 	/* Active styles */
@@ -194,7 +194,7 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 	}
 
 	.toc-link.active .title-bar {
-		@apply bg-gray-500/50;
+		@apply bg-black/40 dark:bg-white/40;
 	}
 
 	.toc-link.active .toc-text {
@@ -207,7 +207,7 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3)
 	}
 
 	.toc-link.parent-active .title-bar {
-		@apply bg-gray-500/40 w-5;
+		@apply bg-black/25 dark:bg-white/25 w-5;
 	}
 
 	/* Transitions */
