@@ -22,3 +22,6 @@ pnpm-debug.log*
 .DS_Store
 
 .obsidian
+
+# claude settings
+.claude/settings.local.json
